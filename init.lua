@@ -229,6 +229,48 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   {
+    'jonathanmorris180/salesforce.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function()
+      require('salesforce'):setup()
+      require('salesforce.org_manager'):get_org_info()
+      require('salesforce.org_manager'):set_default_org()
+    end,
+    keys = {
+      {
+        '<leader>or',
+        function()
+          require('salesforce.file_manager'):pull_from_org()
+        end,
+        desc = '[O]rg [R]etrieve',
+      },
+      {
+        '<leader>od',
+        function()
+          require('salesforce.org_manager'):set_default_org()
+        end,
+        desc = '[O]rg set [D]efault',
+      },
+      {
+        '<leader>op',
+        function()
+          require('salesforce.file_manager'):push_to_org()
+        end,
+        desc = '[O]rg [P]ush',
+      },
+      {
+        '<leader>oo',
+        function()
+          vim.fn.jobstart 'sf org open'
+        end,
+        desc = '[O]rg [O]pen',
+      },
+    },
+  },
+  {
     'theprimeagen/harpoon',
     branch = 'harpoon2',
     dependencies = { 'nvim-lua/plenary.nvim' },
