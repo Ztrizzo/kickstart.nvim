@@ -605,7 +605,7 @@ require('lazy').setup({
       --  This function gets run when an LSP attaches to a particular buffer.
       --    That is to say, every time a new file is opened that is associated with
       --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
-      --    function will be executed to configure the current buffer
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -725,7 +725,7 @@ require('lazy').setup({
         -- But for many setups, the LSP (`tsserver`) will work just fine
         tsserver = {},
         --
-
+        apex_ls = {},
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -769,6 +769,17 @@ require('lazy').setup({
             require('lspconfig')[server_name].setup(server)
           end,
         },
+      }
+      -- `mason_lspconfig.setup_handlers` doesn't handle apex_ls automaticlally (why not?), we need to manually attach below actions
+      -- For some reason .cls files aren't being recognized as 'apex'. Need to run the 'setfiletype apex' command before each .cls file
+      local lspconfig = require 'lspconfig'
+      lspconfig.apex_ls.setup {
+        apex_enable_semantic_errors = false,
+        apex_enable_completion_statistics = false,
+        filetypes = { 'apex', 'cls', 'trigger' },
+        -- root_dir = lspconfig.util.root_pattern 'sfdx-project.json',
+        apex_jar_path = vim.fn.expand '$HOME/.config/nvim/lsp/apex-jorje-lsp.jar',
+        capabilities = capabilities,
       }
     end,
   },
