@@ -299,6 +299,11 @@ require('lazy').setup({
             require('telescope.themes').get_dropdown(),
           },
         },
+        pickers = {
+          colorscheme = {
+            enable_preview = true,
+          },
+        },
       }
 
       -- Enable Telescope extensions if they are installed
