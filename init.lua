@@ -207,7 +207,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.filetype.add {
   extension = {
     cls = 'apex',
-    apex = 'apex',
+    apex = function(path, bufnr)
+      vim.b[bufnr].commentstring = '//'
+      return 'apex'
+    end,
     trigger = 'apex',
   },
 }
@@ -241,12 +244,30 @@ require('lazy').setup({
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',
     },
+
     config = function()
-      require('salesforce'):setup()
+      require('salesforce').setup {
+        debug = {
+          to_file = true,
+        },
+      }
       require('salesforce.org_manager'):get_org_info()
-      require('salesforce.org_manager'):set_default_org()
     end,
     keys = {
+      {
+        '<leader>oa',
+        function()
+          require('salesforce.component_generator'):create_apex()
+        end,
+        desc = 'Salesforce [O]rg create Apex',
+      },
+      {
+        '<leader>ol',
+        function()
+          require('salesforce.component_generator'):create_lwc()
+        end,
+        desc = 'Salesforce [O]rg create LWC',
+      },
       {
         '<leader>or',
         function()
