@@ -17,6 +17,7 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
+vim.opt.tabstop = 2
 vim.opt.breakindent = true
 vim.opt.undofile = true
 vim.opt.ignorecase = true
@@ -39,12 +40,46 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+vim.keymap.set('n', '<leader>j', function()
+  local currentPath = vim.api.nvim_buf_get_name(0)
+  local currentDir = vim.fn.fnamemodify(currentPath, ':h') -- Get the current directory
+  local jsFiles = vim.fn.globpath(currentDir, '*.js', false, true) -- Find all .js files in the directory
+
+  if #jsFiles > 0 then
+    -- Open the first JavaScript file found
+    vim.api.nvim_command('edit ' .. jsFiles[1])
+  else
+    print 'No JavaScript files found in the current directory.'
+  end
+end, { desc = 'navigate to javascript file in same folder' })
+
+vim.keymap.set('n', '<leader>m', function()
+  local currentPath = vim.api.nvim_buf_get_name(0)
+  local currentDir = vim.fn.fnamemodify(currentPath, ':h') -- Get the current directory
+  local htmlFiles = vim.fn.globpath(currentDir, '*.html', false, true) -- Find all .html files in the directory
+
+  if #htmlFiles > 0 then
+    -- Open the first html file found
+    vim.api.nvim_command('edit ' .. htmlFiles[1])
+  else
+    print 'No html files found in the current directory.'
+  end
+end, { desc = 'navigate to html file in same folder' })
+
 -- Highlight when yanking (copying) text
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
+  end,
+})
+
+-- Load salesforce org info when nvim opens
+vim.api.nvim_create_autocmd('VimEnter', {
+  group = vim.api.nvim_create_augroup('salesforce', { clear = true }),
+  callback = function()
+    require('salesforce.org_manager'):get_org_info()
   end,
 })
 
@@ -57,6 +92,11 @@ vim.filetype.add {
       return 'apex'
     end,
     trigger = 'apex',
+  },
+}
+vim.filetype.add {
+  extension = {
+    cmp = 'html',
   },
 }
 
@@ -73,6 +113,23 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  -- {
+  --   'nvim-lualine/lualine.nvim',
+  --   dependencies = { 'nvim-tree/nvim-web-devicons' },
+  --   config = function()
+  --     require('lualine').setup {
+  --       sections = {
+  --         lualine_c = {
+  --           'filename',
+  --           {
+  --             "require'salesforce.org_manager':get_default_alias()",
+  --             icon = 'DEFAULT ORG',
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
   -- Salesforce config
   {
     'jonathanmorris180/salesforce.nvim',
@@ -87,9 +144,24 @@ require('lazy').setup({
           to_file = true,
         },
       }
-      require('salesforce.org_manager'):get_org_info()
+      -- require('salesforce.org_manager'):get_default_alias()
+      -- require('salesforce.org_manager'):get_org_info()
     end,
     keys = {
+      {
+        '<leader>oT',
+        function()
+          require('salesforce.test_runner'):execute_current_class()
+        end,
+        desc = 'Salesforce [O]rg execute all [T]ests in class',
+      },
+      {
+        '<leader>ot',
+        function()
+          require('salesforce.test_runner'):execute_current_method()
+        end,
+        desc = 'Salesforce [O]rg execute [T]est at cursor',
+      },
       {
         '<leader>oa',
         function()
@@ -100,9 +172,9 @@ require('lazy').setup({
       {
         '<leader>ol',
         function()
-          require('salesforce.component_generator'):create_lwc()
+          require('salesforce.component_generator'):create_lightning_component()
         end,
-        desc = 'Salesforce [O]rg create LWC',
+        desc = 'Salesforce [O]rg create Lightning Component',
       },
       {
         '<leader>or',
@@ -712,7 +784,6 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
-
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
@@ -728,6 +799,10 @@ require('lazy').setup({
         return '%2l:%-2v'
       end
 
+      ---@diagnostic disable-next-line: duplicate-set-field
+      statusline.section_diff = function()
+        return ''
+      end
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
