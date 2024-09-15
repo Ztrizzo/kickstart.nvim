@@ -648,7 +648,6 @@ require('lazy').setup({
             else
               vim.notify('formatting apex', vim.log.levels.INFO)
               local current_path = vim.api.nvim_buf_get_name(0)
-              -- local command = string.format(':!npm run prettier:singlefile -- %s', current_path)
               local command = {
                 'npm',
                 'run',
@@ -667,7 +666,6 @@ require('lazy').setup({
                   end)
                 )
                 :wait()
-              -- vim.cmd(command)
             end
           else
             require('conform').format { async = true, lsp_fallback = true }
