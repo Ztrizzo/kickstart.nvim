@@ -8,7 +8,30 @@ vim.opt.number = true
 vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
+vim.opt.foldmethod = 'indent'
+vim.opt.foldlevelstart = 99
 
+--
+-- Utility functions
+--
+P = function(value)
+  print(vim.inspect(value))
+  return value
+end
+
+-- Set commentstring for Apex code
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'apex',
+  callback = function()
+    vim.bo.commentstring = '// %s'
+  end,
+})
+
+vim.keymap.set('n', '<leader><leader>x', function()
+  vim.api.nvim_command ':messages clear'
+  vim.api.nvim_command ':w'
+  vim.api.nvim_command ':source %'
+end)
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -52,6 +75,19 @@ vim.keymap.set('n', '<leader>j', function()
     print 'No JavaScript files found in the current directory.'
   end
 end, { desc = 'navigate to javascript file in same folder' })
+
+vim.keymap.set('n', '<leader>S', function()
+  local currentPath = vim.api.nvim_buf_get_name(0)
+  local currentDir = vim.fn.fnamemodify(currentPath, ':h') -- Get the current directory
+  local cssFiles = vim.fn.globpath(currentDir, '*.css', false, true) -- Find all .css files in the directory
+
+  if #cssFiles > 0 then
+    -- Open the first css file found
+    vim.api.nvim_command('edit ' .. cssFiles[1])
+  else
+    print 'No css files found in the current directory.'
+  end
+end, { desc = 'navigate to css file in same folder' })
 
 vim.keymap.set('n', '<leader>m', function()
   local currentPath = vim.api.nvim_buf_get_name(0)
@@ -193,6 +229,7 @@ require('lazy').setup({
       {
         '<leader>op',
         function()
+          vim.cmd ':w'
           require('salesforce.file_manager'):push_to_org()
         end,
         desc = '[O]rg [P]ush',
@@ -813,7 +850,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'java', 'apex' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
