@@ -646,9 +646,28 @@ require('lazy').setup({
               -- "prettier:singlefile": "prettier --write"
               vim.notify('No npm prettier:singlefile command found in package.json', vim.log.levels.ERROR)
             else
+              vim.notify('formatting apex', vim.log.levels.INFO)
               local current_path = vim.api.nvim_buf_get_name(0)
-              local command = string.format(':!npm run prettier:singlefile -- %s', current_path)
-              vim.cmd(command)
+              -- local command = string.format(':!npm run prettier:singlefile -- %s', current_path)
+              local command = {
+                'npm',
+                'run',
+                'prettier:singlefile',
+                '--',
+                current_path,
+              }
+              vim
+                .system(
+                  command,
+                  nil,
+                  vim.schedule(function()
+                    vim.notify('file formatted', vim.log.levels.INFO)
+                    vim.cmd ':edit!'
+                    vim.cmd ':redraw'
+                  end)
+                )
+                :wait()
+              -- vim.cmd(command)
             end
           else
             require('conform').format { async = true, lsp_fallback = true }
