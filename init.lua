@@ -638,7 +638,21 @@ require('lazy').setup({
       {
         '<leader>f',
         function()
-          require('conform').format { async = true, lsp_fallback = true }
+          local current_file_type = vim.bo.filetype
+          if current_file_type == 'apex' then
+            local status_code = os.execute 'npm run | grep -q prettier:singlefile'
+            if status_code ~= 0 then
+              -- Need to add the following script to your package.json
+              -- "prettier:singlefile": "prettier --write"
+              vim.notify('No npm prettier:singlefile command found in package.json', vim.log.levels.ERROR)
+            else
+              local current_path = vim.api.nvim_buf_get_name(0)
+              local command = string.format(':!npm run prettier:singlefile -- %s', current_path)
+              vim.cmd(command)
+            end
+          else
+            require('conform').format { async = true, lsp_fallback = true }
+          end
         end,
         mode = '',
         desc = '[F]ormat buffer',
