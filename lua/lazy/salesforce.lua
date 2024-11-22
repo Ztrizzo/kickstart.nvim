@@ -62,7 +62,7 @@ M.config = {
     {
       '<leader>op',
       function()
-        vim.cmd ':w'
+        vim.cmd ':wall'
         require('salesforce.file_manager'):push_to_org()
       end,
       desc = '[O]rg [P]ush',
@@ -73,6 +73,13 @@ M.config = {
         vim.fn.jobstart 'sf org open'
       end,
       desc = '[O]rg [O]pen',
+    },
+    {
+      '<leader>oD',
+      function()
+        require('salesforce.diff'):diff_with_org()
+      end,
+      desc = '[O]rg [D]iff',
     },
   },
 }

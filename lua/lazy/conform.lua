@@ -2,7 +2,8 @@ local M = {}
 
 M.config = { -- Autoformat
   'stevearc/conform.nvim',
-  event = { 'BufWritePre' },
+  -- pausing auto formatting
+  -- event = { 'BufWritePre' },
   cmd = { 'ConformInfo' },
   keys = {
     {
