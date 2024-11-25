@@ -17,6 +17,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 require('lazy.config').setup()
 require('lazy').setup({
   require('lazy.salesforce').config,
+  require('lazy.sf-nvim').config,
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   require('lazy.harpoon').config,
   require('lazy.gitsigns').config,
@@ -32,6 +33,7 @@ require('lazy').setup({
   require('lazy.todo-comments').config,
   require('lazy.mini').config,
 
+  require('lazy.lualine').config,
   require('lazy.treesitter').config,
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
