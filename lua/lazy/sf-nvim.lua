@@ -85,7 +85,9 @@ M.config = {
     vim.keymap.set('n', '<leader>oO', Sf.org_open_current_file, { desc = "open org" })
     vim.keymap.set('n', '<leader>oq', Sf.run_query, { desc = "run query in buffer" })
     vim.keymap.set('n', '<leader>oL', Sf.pull_log, { desc = "pull logs" })
-
+    vim.keymap.set('n', '<leader>om', Sf.pull_md_json, { desc = "pull metadata list" })
+    vim.keymap.set('n', '<leader>og', Sf.create_trigger, { desc = "Create Apex Trigger" })
+    vim.keymap.set('n', '<leader>oC', function() os.execute('sf org open --target-org "Quinn Copado Org"') end, { desc = "Open Copado Org" })
 
   end,
   -- keys = {
